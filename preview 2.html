@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Android System Demo</title>
+
+<style>
+body{
+  margin:0;
+  background:#000;
+  font-family:Arial, sans-serif;
+  overflow:hidden;
+}
+
+#phone_shell{
+  width:360px;
+  height:640px;
+  margin:20px auto;
+  border-radius:25px;
+  overflow:hidden;
+  background:#111;
+  box-shadow:0 0 30px rgba(0,0,0,0.8);
+  position:relative;
+}
+
+/* Boot Screen */
+#boot_screen{
+  position:absolute;
+  width:100%;
+  height:100%;
+  background:#000;
+  color:#0f0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  font-family:monospace;
+  font-size:18px;
+  text-align:center;
+  z-index:100;
+}
+
+/* Status Bar */
+#status_bar{
+  height:25px;
+  background:#000;
+  color:white;
+  font-size:12px;
+  display:flex;
+  justify-content:space-between;
+  padding:4px 8px;
+}
+
+/* Main Screen */
+#screen{
+  height:615px;
+  background:url("https://picsum.photos/400/800") center/cover;
+  position:relative;
+}
+
+/* Lock Screen */
+#lock_screen{
+  position:absolute;
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  color:white;
+  background:rgba(0,0,0,0.6);
+}
+
+#time_display{
+  font-size:48px;
+  margin-bottom:10px;
+}
+
+.unlock_btn{
+  padding:10px 20px;
+  border:none;
+  background:#2b6cff;
+  color:white;
+  border-radius:20px;
+  cursor:pointer;
+}
+
+/* Home Screen */
+#home_screen{
+  position:absolute;
+  width:100%;
+  height:100%;
+  display:none;
+  color:white;
+}
+
+#app_grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:15px;
+  padding:20px;
+}
+
+.app_icon{
+  text-align:center;
+  cursor:pointer;
+}
+
+.icon_box{
+  width:60px;
+  height:60px;
+  background:rgba(255,255,255,0.2);
+  border-radius:15px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  margin:auto;
+}
+
+#dock{
+  position:absolute;
+  bottom:0;
+  width:100%;
+  background:rgba(0,0,0,0.5);
+  display:flex;
+  justify-content:space-around;
+  padding:10px 0;
+}
+
+.dock_icon{
+  font-size:20px;
+  cursor:pointer;
+}
+
+/* App Window */
+#app_window{
+  position:absolute;
+  width:100%;
+  height:100%;
+  background:#111;
+  display:none;
+  color:white;
+}
+
+.app_header{
+  background:#000;
+  padding:10px;
+}
+
+.close_btn{
+  float:right;
+  cursor:pointer;
+}
+
+#notes_area{
+  width:90%;
+  height:400px;
+  margin:10px;
+  background:#222;
+  color:white;
+  border:none;
+}
+</style>
+</head>
+
+<body>
+
+<div id="phone_shell">
+
+<!-- Boot Screen -->
+<div id="boot_screen">
+  <div>Booting Android System...</div>
+  <div id="boot_log" style="margin-top:20px;font-size:14px;"></div>
+</div>
+
+<div id="status_bar">
+  <span id="clock"></span>
+  <span>📶 🔋</span>
+</div>
+
+<div id="screen">
+
+<div id="lock_screen">
+<div id="time_display"></div>
+<button class="unlock_btn" onclick="unlock()">Unlock</button>
+</div>
+
+<div id="home_screen">
+
+<div id="app_grid">
+
+<div class="app_icon" onclick="openApp('notes')">
+<div class="icon_box">📝</div>
+Notes
+</div>
+
+<div class="app_icon" onclick="openApp('browser')">
+<div class="icon_box">🌐</div>
+Browser
+</div>
+
+<div class="app_icon" onclick="openApp('calc')">
+<div class="icon_box">🧮</div>
+Calc
+</div>
+
+<div class="app_icon" onclick="openApp('info')">
+<div class="icon_box">⚙</div>
+Info
+</div>
+
+</div>
+
+<div id="dock">
+<div class="dock_icon" onclick="openApp('phone')">📞</div>
+<div class="dock_icon" onclick="openApp('browser')">🌐</div>
+<div class="dock_icon" onclick="openApp('notes')">📝</div>
+</div>
+
+</div>
+
+<div id="app_window">
+<div class="app_header">
+<span id="app_title"></span>
+<span class="close_btn" onclick="closeApp()">✕</span>
+</div>
+
+<div id="app_content"></div>
+</div>
+
+</div>
+</div>
+
+<script>
+// Clock
+function updateClock(){
+  let d=new Date();
+  let t=d.getHours().toString().padStart(2,"0")+":"+d.getMinutes().toString().padStart(2,"0");
+  document.getElementById("clock").textContent=t;
+  document.getElementById("time_display").textContent=t;
+}
+setInterval(updateClock,1000);
+updateClock();
+
+// Unlock
+function unlock(){
+  document.getElementById("lock_screen").style.display="none";
+}
+
+// Open App
+function openApp(name){
+  let win=document.getElementById("app_window");
+  let title=document.getElementById("app_title");
+  let content=document.getElementById("app_content");
+  win.style.display="block";
+  if(name==="notes"){
+    title.textContent="Notes";
+    content.innerHTML='<textarea id="notes_area">Write something...</textarea>';
+  }
+  else if(name==="browser"){
+    title.textContent="Browser";
+    content.innerHTML='<iframe src="https://example.com" style="width:100%;height:500px;border:none;"></iframe>';
+  }
+  else if(name==="calc"){
+    title.textContent="Calculator";
+    content.innerHTML='<h2 style="padding:10px">2 + 2 = '+(2+2)+'</h2>';
+  }
+  else if(name==="info"){
+    title.textContent="System Info";
+    content.innerHTML='<div style="padding:10px">HTML Android Demo<br>Version 0.4</div>';
+  }
+  else if(name==="phone"){
+    title.textContent="Dialer";
+    content.innerHTML='<div style="padding:10px;font-size:22px">📞 Call feature demo</div>';
+  }
+}
+
+// Close App
+function closeApp(){
+  document.getElementById("app_window").style.display="none";
+}
+
+// Booting Sequence
+const bootLog=document.getElementById("boot_log");
+const bootMessages=[
+  "Initializing kernel...",
+  "Loading drivers...",
+  "Starting services...",
+  "Mounting system...",
+  "Checking memory...",
+  "Android OS ready."
+];
+
+let i=0;
+function bootStep(){
+  if(i<bootMessages.length){
+    bootLog.innerHTML+=bootMessages[i]+"<br>";
+    i++;
+    setTimeout(bootStep,800);
+  } else {
+    // Hide boot screen and show lock screen
+    document.getElementById("boot_screen").style.display="none";
+    document.getElementById("lock_screen").style.display="flex";
+  }
+}
+
+bootStep();
+</script>
+
+</body>
+</html>
